@@ -1,52 +1,68 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
+
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { MantineProvider } from '@mantine/core';
+import "./css/App.css";
+import "./css/mantineBase.css";
+import { store } from './state/store';
+import Home from './views/pages/home';
+import CategoryList from './views/pages/category_list';
+import TaskList from './views/pages/task_list';
+import Login from './views/pages/login';
+import Register from "./views/pages/register";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
-
   return (
-    <div className="container">
-      <h1>Welcome to Tauri!</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-
-      <p>{greetMsg}</p>
-    </div>
+    <>
+      <Provider store={store}>
+        <MantineProvider
+          theme={{
+            components: {
+              Modal: {
+                styles: {
+                  header: {
+                    background: 'transparent',
+                  },
+                  close: {
+                    color: 'black',
+                    transitionDuration: '0.5s',
+                    '&:hover': {
+                      color: 'black',
+                      backgroundColor: 'transparent',
+                      transform: 'scale(1.5, 1.5)',
+                      transitionDuration: '0.5s',
+                    },
+                  },
+                  content: {
+                    background: 'rgba( 255, 255, 255, 0.45 )',
+                    boxShadow: '0 8px 32px 0 rgba( 31, 38, 135, 0.37 )',
+                    backdropFilter: 'blur( 1px )',
+                    webkitBackdropFilter: 'blur( 1px )',
+                    border: '1px solid rgba( 255, 255, 255, 0.18 )',
+                  },
+                },
+              },
+            },
+          }}
+        >
+          <BrowserRouter>
+            <div className="flex items-center bg-gradient-to-br from-[#C6FFDD] via-[#FBD786] to-[#f7797d] h-screen">
+              <div className="m-auto max-h-screen min-w-[420px] max-w-4xl p-6 glass-white rounded-lg">
+                <Routes>
+                  <Route path="/task/index" element={<Home />} />
+                  <Route path="/" element={<CategoryList />} />
+                  <Route path="/category/:categoryId/task" element={<TaskList />} />
+                </Routes>
+              </div>
+            </div>
+          </BrowserRouter>
+        </MantineProvider>
+      </Provider>
+    </>
   );
 }
 
